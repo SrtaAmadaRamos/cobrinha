@@ -80,13 +80,13 @@ void movimentar(Posicao p){
         }
     }
 
-    for(int i = 1; i < minhoca.tamanho - 1; i++){
+    for(int i = 1; i < minhoca.tamanho; i++){
         if(minhoca.p[0].x == minhoca.p[i].x  &&  minhoca.p[0].y == minhoca.p[i].y){
             sair(2);
         }
     }
 
-    if( TAM < minhoca.p[0].x || minhoca.p[0].x < 0  ||  TAM < minhoca.p[0].y  ||  minhoca.p[0].y < 0 ){
+    if( TAM <= minhoca.p[0].x || minhoca.p[0].x < 0  ||  TAM <= minhoca.p[0].y  ||  minhoca.p[0].y < 0 ){
         sair(3);
     }
 }
@@ -102,7 +102,7 @@ void jogar(){
     while(1){   
 
         imprimirMatriz();
-        sleep(1);
+        millisleep(400);
 
         if(kbhit()){
             letra = getch();
