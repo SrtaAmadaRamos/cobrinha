@@ -11,4 +11,6 @@
 	#include "funLinux.c"
 #else
 	#include <conio.h>
+	#include <windows.h>
 #endif
+#include  "tempo.c"
