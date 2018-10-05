@@ -28,22 +28,101 @@ int ponteiroNulo(Posicao *p ){
 }
 
 void config(){
-	srand((unsigned) time(NULL));
-	minhoca.tamanho = 3;
-	minhoca.p = (Posicao*) malloc(sizeof(Posicao) * minhoca.tamanho);
-	ponteiroNulo(minhoca.p);
-	
-	for(int i = 0; i < minhoca.tamanho; i++){
-        minhoca.p[i].x = minhoca.tamanho - i - 1;
-		minhoca.p[i].y = 0;
-	}
 
-	gerarDoce();
+    int continua;
+
+    printf("1 - Continuar o jogo anterior.\n");
+    printf("2 - Iniciar um novo jogo.\n");
+    printf("=> ");
+    scanf("%d", &continua);
+
+    srand((unsigned) time(NULL));
+
+    if(continua == 1){
+
+        if(!carregarJogo()){
+
+            printf("Não foi possível carregar o jogo\n");
+            exit(1);
+        }
+
+    }else if(continua == 2){
+        minhoca.tamanho = 3;
+        minhoca.p = (Posicao*) malloc(sizeof(Posicao) * minhoca.tamanho);
+        ponteiroNulo(minhoca.p);
+    
+        for(int i = 0; i < minhoca.tamanho; i++){
+            minhoca.p[i].x = minhoca.tamanho - i - 1;
+            minhoca.p[i].y = 0;
+        }
+
+        gerarDoce();
+    }else{
+        printf("Opção inválida\n");
+        exit(1);
+    }
 
 	limparMatriz();
 
 	colocaObjeto();
+}
 
+int carregarJogo(){
+    FILE *file ;                              // criando ponteiro para o aquivo
+    Jogo *jogo;                               //criando ponteiro p/ jogo
+    file = fopen("salvo.txt" , "rb");        //abre um arquivo binario para leitura
+
+    if(file == NULL ){                    // verificando se conseguiu abrir o arquivo
+        return 0;
+    }
+
+    jogo = (Jogo *) malloc(sizeof(Jogo));   //alocando memoria pra variavel jogo
+
+    fread(jogo, sizeof(Jogo) , 1, file);  //f read ler o arquivo e salva os dados na variavel jogo(variavel,tamanho,quantidade, pointeiro)
+
+    minhoca.tamanho = jogo->tamanho_minhoca ;  
+    
+    minhoca.p = (Posicao *) malloc(sizeof(Posicao) * minhoca.tamanho);  //alocou a posicao da minhocaa
+
+    for(int i = 0; i < minhoca.tamanho ; i++){
+        minhoca.p[i] = jogo->posi_minhoca[i];
+    }
+
+    doce.vida = jogo->doce.vida;
+    doce.posi = jogo->doce.posi;
+    op = jogo->direcao;
+
+    fclose(file);
+    free(jogo);  
+    return 1;
+}
+
+void salvarJogo(){
+    FILE *file;
+    file = fopen("salvo.txt", "wb");  //abrindo uma arquivo binario para escrita
+
+    if(file == NULL){
+        printf("Não foi possivel abrir o arquivo :(");
+        exit(1);
+    }
+
+    Jogo *jogo ;
+    jogo = (Jogo *) malloc( sizeof(Jogo));
+
+    jogo->doce.vida = doce.vida;
+    jogo->doce.posi.x = doce.posi.x;                //copiando os dados do jogo pra variavel jogo
+    jogo->doce.posi.y = doce.posi.y;
+    jogo->direcao = op;
+
+    jogo->tamanho_minhoca = minhoca.tamanho;
+
+    for(int i = 0 ; i < minhoca.tamanho; i++){
+        jogo->posi_minhoca[i] = minhoca.p[i] ;
+    }
+
+    fwrite(jogo, 1, sizeof(Jogo), file);  //escreve os dados setados anteriormente no arquivo
+    fclose(file);
+    free(jogo);  
 }
 
 void gerarDoce(){
@@ -92,12 +171,10 @@ void movimentar(Posicao p){
 }
 
 void jogar(){
-	char op; 
 	Posicao posiCabeca = minhoca.p[0];;
 	limparTela();
     int valida = 1; 
     char letra;
-    op = 's';
 
     while(1){   
 
@@ -115,11 +192,22 @@ void jogar(){
                 letra == 'D' ||
                 letra == 'w' ||
                 letra == 'W' ||
+                letra == 'r' ||
+                letra == 'R' ||
                 letra == 'q' ||
                 letra == 'Q'
             ){
-                valida = 1;
-                op = letra ;
+
+                if(
+                    letra == 'r' ||
+                    letra == 'R' 
+                ) {
+                    salvarJogo();
+                }else{
+                    valida = 1;
+                    op = letra ;
+                }
+
             }else{
                 valida = 0;
             }
@@ -183,7 +271,10 @@ void jogar(){
             printf("(Tecla A) Para esquerda\n");
             printf("(Tecla S) Para baixo\n");
             printf("(Tecla D) Para direita\n");
+            printf("(Tecla R) Para salvar o jogo\n");
             printf("(Tecla Q) Para sair\n\n");
+
+
         }
 
     }
@@ -196,11 +287,11 @@ void limparTela(){
 void sair(int op){
 
     if(op == 1)
-        printf("Fim de jogo, você atingiu o tamanho máximo da minhoca!  :D\n");
+        printf("Game Over, você atingiu o tamanho máximo da minhoca!  :D\n");
     if(op == 2)
-        printf("Fim de jogo, a minhoca bateu no própio corpo! :(\n");
+        printf("Game Over, a minhoca bateu no própio corpo! :(\n");
     if(op == 3)
-        printf("Fim de jogo, você bateu nas extremidades do tabuleiro!  :(\n");
+        printf("Game Over, você bateu nas extremidades do tabuleiro!  :(\n");
     
 	free(minhoca.p);
 	exit(1);
