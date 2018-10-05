@@ -1,6 +1,8 @@
 void limparMatriz();
 void imprimirMatriz();
 int ponteiroNulo(Posicao *p);
+void salvarJogo();
+int carregarJogo();
 void config();
 void gerarDoce();
 void colocaObjeto();
