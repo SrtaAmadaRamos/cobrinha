@@ -14,3 +14,10 @@ typedef struct  {
 	Posicao posi;
 
 } Doce;
+
+typedef struct{
+	int tamanho_minhoca;
+	Posicao posi_minhoca[TAM_MAX];
+    Doce doce ;
+    char direcao;
+} Jogo; 
