@@ -7,6 +7,7 @@
 char matriz[TAM][TAM];
 Minhoca  minhoca;
 Doce doce ;
+char op = 's';
 
 #include "prototipos.c"
 #include "functions.c"
@@ -19,3 +20,4 @@ int main() {
 	jogar();
 
 }
+
